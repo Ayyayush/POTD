@@ -1,0 +1,1 @@
+ // cout << str[j] - '0' << " ";                        // us digit ko print karo (debugging ke liye)
