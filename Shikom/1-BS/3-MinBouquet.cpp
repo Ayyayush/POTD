@@ -42,3 +42,50 @@ int bouquet(vector<int>&bloomDay,int mid,int k)
         return mindays;
     }
 };
+
+
+
+
+
+from typing import List
+
+class Solution:
+    
+    def bouquet(self, bloomDay: List[int], mid: int, k: int) -> int:
+        count_consecutive = 0
+        bouquet = 0
+
+        for i in range(len(bloomDay)):
+            if bloomDay[i] <= mid:
+                count_consecutive += 1
+            else:
+                count_consecutive = 0
+
+            if count_consecutive == k:
+                bouquet += 1
+                count_consecutive = 0
+
+        return bouquet
+
+    
+    def minDays(self, bloomDay: List[int], m: int, k: int) -> int:
+        n = len(bloomDay)
+
+        # not enough flowers
+        if m * k > n:
+            return -1
+
+        l = min(bloomDay)
+        r = max(bloomDay)
+        minday = -1
+
+        while l <= r:
+            mid = l + (r - l) // 2
+
+            if self.bouquet(bloomDay, mid, k) >= m:
+                minday = mid
+                r = mid - 1
+            else:
+                l = mid + 1
+
+        return minday
