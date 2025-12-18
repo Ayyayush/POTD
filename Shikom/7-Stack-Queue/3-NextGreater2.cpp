@@ -1,83 +1,91 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-/* =========================================================
-   APPROACH: Brute Force
-   Time Complexity: O(n * m)
-   Space Complexity: O(1)
-   ========================================================= */
+/* ===================== BRUTE FORCE ===================== */
 void brute()
 {
-    vector<int> nums1 = {4, 1, 2};
-    vector<int> nums2 = {1, 3, 4, 2};
+    // APPROACH: Brute Force (Circular Traversal using Nested Loops)
+    // For each element, check to the right; if not found, wrap around
 
-    vector<int> ans;
+    // TIME COMPLEXITY: O(N^2)
+    // SPACE COMPLEXITY: O(1)   (excluding output array)
 
-    for (int i = 0; i < nums1.size(); i++)
+    vector<int> nums = {1, 2, 1};                 // sample input
+    int n = nums.size();
+
+    vector<int> result(n, -1);
+
+    for (int i = 0; i < n; i++)
     {
-        int curr = nums1[i];
-        int k = 0;
+        bool found = false;
 
-        // find curr element in nums2
-        while (k < nums2.size() && nums2[k] != curr)
+        // check elements to the right
+        for (int j = i + 1; j < n; j++)
         {
-            k++;
-        }
-
-        int nge = -1;
-
-        // search for next greater element
-        for (int j = k + 1; j < nums2.size(); j++)
-        {
-            if (nums2[j] > curr)
+            if (nums[j] > nums[i])
             {
-                nge = nums2[j];
+                result[i] = nums[j];
+                found = true;
                 break;
             }
         }
 
-        ans.push_back(nge);
+        // circular check from beginning
+        if (!found)
+        {
+            for (int j = 0; j <= i; j++)
+            {
+                if (nums[j] > nums[i])
+                {
+                    result[i] = nums[j];
+                    break;
+                }
+            }
+        }
     }
 
-    for (int x : ans)
-        cout << x << " ";
+    for (int x : result) cout << x << " ";
 }
 
-/* =========================================================
-   APPROACH: Better (Monotonic Stack + Hash Map)
-   Time Complexity: O(n + m)
-   Space Complexity: O(n)
-   ========================================================= */
-void better()
+/* ===================== OPTIMAL ===================== */
+void optimal()
 {
-    vector<int> nums1 = {4, 1, 2};
-    vector<int> nums2 = {1, 3, 4, 2};
+    // APPROACH: Monotonic Stack + Circular Traversal
+    // Traverse array twice from right to left using modulo
 
-    unordered_map<int, int> mp;    // element -> next greater
+    // TIME COMPLEXITY: O(N)
+    // SPACE COMPLEXITY: O(N)
+
+    vector<int> nums = {1, 2, 1};                 // sample input
+    int n = nums.size();
+
+    vector<int> res(n, -1);
     stack<int> st;
 
-    // build NGE for nums2
-    for (int i = nums2.size() - 1; i >= 0; i--)
+    for (int i = 2 * n - 1; i >= 0; i--)
     {
-        while (!st.empty() && st.top() <= nums2[i])
+        int idx = i % n;
+
+        while (!st.empty() && st.top() <= nums[idx])
         {
             st.pop();
         }
 
-        mp[nums2[i]] = st.empty() ? -1 : st.top();
-        st.push(nums2[i]);
+        if (!st.empty())
+        {
+            res[idx] = st.top();
+        }
+
+        st.push(nums[idx]);
     }
 
-    // answer for nums1
-    for (int i = 0; i < nums1.size(); i++)
-    {
-        cout << mp[nums1[i]] << " ";
-    }
+    for (int x : res) cout << x << " ";
 }
 
-/* ================= MAIN FUNCTION ================= */
 int main()
 {
-    better();     // change to brute() if needed
+    brute();
+    cout << "\n";
+    optimal();
     return 0;
 }
