@@ -1,23 +1,142 @@
-class Solution {
-public:
-    vector<int> plusOne(vector<int>& digits) {
+#include <bits/stdc++.h>
+using namespace std;
 
-        int n = digits.size();
-        int carry = 1;      // hum +1 kar rahe hain, toh shuru mein carry = 1
+/*
+--------------------------------------------------
+Approach: Brute Force (Convert to Number)
+Time Complexity: O(n)
+Space Complexity: O(n)
+--------------------------------------------------
+*/
+void brute()
+{
+    vector<int> nums;
+    int n; 
+    cin >> n;
+    nums.resize(n);
 
-        for (int i = n - 1; i >= 0; i--) {
-            int sum = digits[i] + carry;
+    for(int i = 0; i < n; i++)
+        cin >> nums[i];
 
-            digits[i] = sum % 10;     // current digit update
-            carry = sum / 10;         // next digit ke liye carry set
+    // Convert digits to number (may overflow for large n)
+    long long number = 0;
+    for(int i = 0; i < n; i++)
+        number = number * 10 + nums[i];
 
-            if (carry == 0) break;    // agar carry 0 ho gaya toh aage kuch karne ki zarurat nahi
-        }
+    number += 1;                                   // add one
 
-        if (carry) {
-            digits.insert(digits.begin(), carry);     // agar loop ke baad bhi carry bacha hai, toh usse front mein daalna padega
-        }
-
-        return digits;
+    vector<int> ans;
+    while(number > 0)
+    {
+        ans.push_back(number % 10);
+        number /= 10;
     }
-};
+
+    reverse(ans.begin(), ans.end());
+
+    for(int x : ans)
+        cout << x << " ";
+}
+
+/*
+--------------------------------------------------
+Approach: Better (Extra Array Carry Handling)
+Time Complexity: O(n)
+Space Complexity: O(n)
+--------------------------------------------------
+*/
+void better()
+{
+    vector<int> nums;
+    int n;
+    cin >> n;
+    nums.resize(n);
+
+    for(int i = 0; i < n; i++)
+        cin >> nums[i];
+
+    vector<int> ans(nums.begin(), nums.end());
+
+    int carry = 1;                                 // initial +1
+
+    for(int i = n - 1; i >= 0; i--)
+    {
+        int sum = ans[i] + carry;                  // digit + carry
+        ans[i] = sum % 10;                         // current digit
+        carry = sum / 10;                          // carry forward
+    }
+
+    if(carry == 1)
+        ans.insert(ans.begin(), 1);                // extra digit
+
+    for(int x : ans)
+        cout << x << " ";
+}
+
+/*
+--------------------------------------------------
+Approach: Optimal (In-Place Carry Propagation)
+Time Complexity: O(n)
+Space Complexity: O(1)
+--------------------------------------------------
+*/
+void optimal()
+{
+    vector<int> nums;
+    int n;
+    cin >> n;
+    nums.resize(n);
+
+    for(int i = 0; i < n; i++)
+        cin >> nums[i];
+
+    int i = n - 1;
+
+    // Case: single digit [9]
+    if(n == 1 && nums[i] == 9)
+    {
+        nums[0] = 1;
+        nums.push_back(0);
+    }
+    else
+    {
+        while(i >= 0)
+        {
+            if(nums[i] == 9)
+            {
+                nums[i] = 0;                       // reset 9
+                int j = i - 1;
+
+                // propagate carry across 9s
+                while(j >= 0 && nums[j] == 9)
+                {
+                    nums[j] = 0;
+                    j--;
+                }
+
+                if(j >= 0)
+                    nums[j] += 1;                  // safe increment
+                else
+                    nums.insert(nums.begin(), 1);  // all digits were 9
+            }
+            else
+            {
+                nums[i] += 1;                      // simple increment
+            }
+            break;                                 // only one operation needed
+        }
+    }
+
+    for(int x : nums)
+        cout << x << " ";
+}
+
+int main()
+{
+    // Call the version you want
+    // brute();
+    // better();
+    optimal();
+
+    return 0;
+}
