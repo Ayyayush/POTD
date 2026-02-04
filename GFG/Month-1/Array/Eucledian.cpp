@@ -66,3 +66,4 @@ int main()
 {
     better();
     return 0;
+}
