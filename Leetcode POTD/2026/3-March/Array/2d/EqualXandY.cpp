@@ -1,50 +1,108 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+/**
+ * ! Count Submatrices with Equal Frequency of X and Y
+ * 
+ * ------------------ PROBLEM DESCRIPTION ------------------
+ * Hume ek 2D grid diya gaya hai jisme characters 'X' aur 'Y' hain
+ * 
+ * Hume count karna hai kitne submatrices (0,0 → i,j) me:
+ * → number of 'X' == number of 'Y'
+ * → aur at least 1 element ho (non-empty)
+ * 
+ * --------------------------------------------------------
+ * ! THOUGHT PROCESS
+ * 
+ * Ye problem same pattern follow karti hai:
+ * → "Count Submatrices with Sum ≤ k" (Leetcode 3070 type)
+ * 
+ * Yaha:
+ * → Instead of sum, hum frequency track kar rahe hain
+ * 
+ * Trick:
+ * → 2 prefix sum grids maintain karenge:
+ *    1. cumSumX → count of 'X'
+ *    2. cumSumY → count of 'Y'
+ * 
+ * --------------------------------------------------------
+ * ! APPROACH (2D PREFIX SUM)
+ * 
+ * Har cell (i,j) par:
+ * → cumSumX[i][j] = total X in (0,0 → i,j)
+ * → cumSumY[i][j] = total Y in (0,0 → i,j)
+ * 
+ * Formula same rahega:
+ * → top + left - overlap
+ * 
+ * --------------------------------------------------------
+ * ! CONDITION CHECK
+ * 
+ * Agar:
+ * → cumSumX[i][j] == cumSumY[i][j]
+ * → aur cumSumX[i][j] > 0
+ * 
+ * toh:
+ * → valid submatrix
+ * 
+ * --------------------------------------------------------
+ * ! TIME COMPLEXITY
+ * O(m * n) → har cell ek baar process
+ * 
+ * --------------------------------------------------------
+ * ! SPACE COMPLEXITY
+ * O(m * n) → 2 prefix matrices use ho rahe hain
+ * 
+ */
+
 class Solution {
 public:
     int numberOfSubmatrices(vector<vector<char>>& grid) {
-        int n = grid.size();
-        int m = grid[0].size();
+        
+        int m = grid.size();                    // total rows
+        int n = grid[0].size();                 // total cols
 
-        vector<vector<int>> sum(n, vector<int>(m, 0));
-        vector<vector<int>> cntX(n, vector<int>(m, 0));
+        // ! prefix sum for 'X'
+        vector<vector<int>> cumSumX(m, vector<int>(n, 0));
 
-        int res = 0;
+        // ! prefix sum for 'Y'
+        vector<vector<int>> cumSumY(m, vector<int>(n, 0));
 
-        for(int i = 0; i < n; i++){
-            for(int j = 0; j < m; j++){
+        int count = 0;                          // final answer
 
-                int val = 0, x = 0;
+        // ! traverse grid
+        for(int i = 0; i < m; i++) {
+            for(int j = 0; j < n; j++) {
 
-                if(grid[i][j] == 'X'){
-                    val = 1;
-                    x = 1;
-                }
-                else if(grid[i][j] == 'Y'){
-                    val = -1;
-                }
+                // ! current cell contribution
+                cumSumX[i][j] = (grid[i][j] == 'X');   // 1 if X else 0
+                cumSumY[i][j] = (grid[i][j] == 'Y');   // 1 if Y else 0
 
-                sum[i][j] = val;
-                cntX[i][j] = x;
-
-                if(i > 0){
-                    sum[i][j] += sum[i-1][j];
-                    cntX[i][j] += cntX[i-1][j];
-                }
-                if(j > 0){
-                    sum[i][j] += sum[i][j-1];
-                    cntX[i][j] += cntX[i][j-1];
-                }
-                if(i > 0 && j > 0){
-                    sum[i][j] -= sum[i-1][j-1];
-                    cntX[i][j] -= cntX[i-1][j-1];
+                // ! add top
+                if(i-1 >= 0) {
+                    cumSumX[i][j] += cumSumX[i-1][j];
+                    cumSumY[i][j] += cumSumY[i-1][j];
                 }
 
-                if(sum[i][j] == 0 && cntX[i][j] > 0) res++;
+                // ! add left
+                if(j-1 >= 0) {
+                    cumSumX[i][j] += cumSumX[i][j-1];
+                    cumSumY[i][j] += cumSumY[i][j-1];
+                }
+
+                // ! remove overlap
+                if(i-1 >= 0 && j-1 >= 0) {
+                    cumSumX[i][j] -= cumSumX[i-1][j-1];
+                    cumSumY[i][j] -= cumSumY[i-1][j-1];
+                }
+
+                // ! check equal frequency condition
+                if(cumSumX[i][j] == cumSumY[i][j] && cumSumX[i][j] > 0) {
+                    count++;                          // valid submatrix
+                }
             }
         }
 
-        return res;
+        return count;                                 // final answer
     }
 };
