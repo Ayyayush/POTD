@@ -1,69 +1,45 @@
-import java.util.*;
+class Solution {
+public:
+    string findTheString(vector<vector<int>>& lcp) {
+        int n = lcp.size();
+        string word(n, '\0');
+        char current = 'a';
 
-public class Solution {
-
-    public static int MaxTasks(int N, int C, List<List<Integer>> Tasks) {
-        int maxTasks = 0;
-
-        for (int mask = 0; mask < (1 << N); mask++) {
-            if (Integer.bitCount(mask) <= maxTasks) continue;
-
-            List<int[]> selected = new ArrayList<>();
-
-            for (int i = 0; i < N; i++) {
-                if ((mask & (1 << i)) != 0) {
-                    selected.add(new int[]{Tasks.get(i).get(0), Tasks.get(i).get(1)});
+        for (int i = 0; i < n; i++) {
+            if (word[i] == '\0') {
+                if (current > 'z') {
+                    return "";
                 }
-            }
-
-            Collections.sort(selected, (a, b) -> a[0] - b[0]);
-
-            int capital = C;
-            boolean valid = true;
-
-            for (int i = 0; i < selected.size(); i++) {
-                int deadline = selected.get(i)[0];
-                int profit = selected.get(i)[1];
-
-                int time = i + 1;
-
-                if (deadline < time) {
-                    valid = false;
-                    break;
+                word[i] = current;
+                for (int j = i + 1; j < n; j++) {
+                    if (lcp[i][j] > 0) {
+                        word[j] = word[i];
+                    }
                 }
-
-                capital += profit;
-
-                if (capital < 0) {
-                    valid = false;
-                    break;
-                }
-            }
-
-            if (valid) {
-                maxTasks = Math.max(maxTasks, selected.size());
+                current++;
             }
         }
 
-        return maxTasks;
-    }
-
-    public static void main(String[] args) {
-        Scanner scan = new Scanner(System.in);
-
-        int N = Integer.parseInt(scan.nextLine().trim());
-        int C = Integer.parseInt(scan.nextLine().trim());
-
-        List<List<Integer>> Tasks = new ArrayList<>();
-
-        for (int i = 0; i < N; i++) {
-            String[] parts = scan.nextLine().trim().split(" ");
-            int d = Integer.parseInt(parts[0]);
-            int p = Integer.parseInt(parts[1]);
-            Tasks.add(Arrays.asList(d, p));
+        for (int i = n - 1; i >= 0; i--) {
+            for (int j = n - 1; j >= 0; j--) {
+                if (word[i] != word[j]) {
+                    if (lcp[i][j]) {
+                        return "";
+                    }
+                } else {
+                    if (i == n - 1 || j == n - 1) {
+                        if (lcp[i][j] != 1) {
+                            return "";
+                        }
+                    } else {
+                        if (lcp[i][j] != lcp[i + 1][j + 1] + 1) {
+                            return "";
+                        }
+                    }
+                }
+            }
         }
 
-        int result = MaxTasks(N, C, Tasks);
-        System.out.println(result);
+        return word;
     }
-}
+};
