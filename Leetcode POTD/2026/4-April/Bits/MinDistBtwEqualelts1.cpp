@@ -1,4 +1,13 @@
-class Solution {
+/**
+ * Minimum Distahce Between Three Equal Elements 1 
+ * 
+ * 
+ * probelm xplanation 
+ * 
+ */
+
+ 
+  class Solution {
 public:
     int minimumDistance(vector<int>& nums) {
         map<int,vector<int>> mp;
