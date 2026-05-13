@@ -1,3 +1,9 @@
+/**
+ * Leetcode 396
+ * Rotate function 
+ * 
+ */
+
 class Solution {
 public:
     int maxRotateFunction(vector<int>& nums) {
