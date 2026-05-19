@@ -1,41 +1,57 @@
+#include <bits/stdc++.h>
+using namespace std;
+
 class Solution {
 public:
+
+    // ! APPROACH : Circular Linked List
+    // ! T.C. : O(N)
+    // ! S.C. : O(1)
+
     ListNode* rotateRight(ListNode* head, int k) {
 
-        if (head == NULL)                        // If the list is empty, no rotation is possible
-            return NULL;
+        // ! Edge cases
+        if(head == NULL || head->next == NULL || k == 0)
+        return head;
 
-        int size = 0;
-        ListNode* temp = head;
+        int totalNodes = 1;
 
-        // Calculate the size of the linked list
-        while (temp != NULL) {
-            size++;                               // Increment size as we traverse the list
-            temp = temp->next;                    // Move to the next ListNode
+        ListNode* lastNode = head;
+
+        // ! Find total nodes and last node
+        while(lastNode->next != NULL)
+        {
+            lastNode = lastNode->next;
+            totalNodes++;
         }
 
-        if (size == 0 || k % size == 0)           // If size is 0 or no rotation needed
-            return head;
+        // ! Remove extra rotations
+        k = k % totalNodes;
 
-        k = k % size;                             // In case k > size, rotate only the remainder
-        temp = head;
+        // ! No rotation needed
+        if(k == 0)
+        return head;
 
-        // Traverse the list to find the (size - k - 1)th node
-        for (int i = 0; i < size - k - 1; ++i) {
-            temp = temp->next;                    // Move temp to the (size - k - 1)th node
+        // ! Convert into circular linked list
+        lastNode->next = head;
+
+        // ! Find position of new last node
+        int newLastNodePosition = totalNodes - k;
+
+        ListNode* newLastNode = head;
+
+        // ! Move to new last node
+        for(int move = 1; move < newLastNodePosition; move++)
+        {
+            newLastNode = newLastNode->next;
         }
 
-        ListNode* nhead = temp->next;             // The new head will be the (size - k)th node
-        temp->next = NULL;                        // Disconnect the last part of the list
+        // ! New head after rotation
+        ListNode* newHead = newLastNode->next;
 
-        // Traverse to the last node of the rotated list
-        ListNode* last = nhead;
-        while (last->next != NULL) {
-            last = last->next;                    // Move last to the next ListNode
-        }
+        // ! Break circular connection
+        newLastNode->next = NULL;
 
-        // Connect the last node to the original head
-        last->next = head;                       
-        return nhead;                            // Return the new head of the rotated list
+        return newHead;          // always give if exists
     }
 };
