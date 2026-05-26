@@ -162,17 +162,29 @@
 class Solution {
 public:
     int n;
+<<<<<<< HEAD
     vector<int> dpArray;
 
     int solve(vector<int>& arr, int d, int i) {
         if (dpArray[i] != -1)
             return dpArray[i];
+=======
+    vector<int> t;
+
+    int solve(vector<int>& arr, int d, int i) {
+        if (t[i] != -1)
+            return t[i];
+>>>>>>> e08c97c045febeaa9a372459f96b10c5f7224fd3
 
         int result = 1; // count current index also
 
         // move left
         for (int j = i - 1; j >= max(0, i - d); j--) {
+<<<<<<< HEAD
             // can'dpArray jump further once taller/equal element appears
+=======
+            // can't jump further once taller/equal element appears
+>>>>>>> e08c97c045febeaa9a372459f96b10c5f7224fd3
             if (arr[j] >= arr[i])
                 break;
             result = max(result, 1 + solve(arr, d, j));
@@ -180,18 +192,30 @@ public:
 
         // move right
         for (int j = i + 1; j <= min(n - 1, i + d); j++) {
+<<<<<<< HEAD
             // can'dpArray jump further once taller/equal element appears
+=======
+            // can't jump further once taller/equal element appears
+>>>>>>> e08c97c045febeaa9a372459f96b10c5f7224fd3
             if (arr[j] >= arr[i])
                 break;
             result = max(result, 1 + solve(arr, d, j));
         }
 
+<<<<<<< HEAD
         return dpArray[i] = result;
+=======
+        return t[i] = result;
+>>>>>>> e08c97c045febeaa9a372459f96b10c5f7224fd3
     }
 
     int maxJumps(vector<int>& arr, int d) {
         n = arr.size();
+<<<<<<< HEAD
         dpArray.resize(n, -1);
+=======
+        t.resize(n, -1);
+>>>>>>> e08c97c045febeaa9a372459f96b10c5f7224fd3
 
         int maxJump = 1;
         // We need to try from every index
